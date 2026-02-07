@@ -1,0 +1,12 @@
+[project]
+name = "fellowship-funding"
+version = "0.1.0"
+description = "Automated weekly fellowship/grant funding search and email digest"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "requests>=2.31",
+    "beautifulsoup4>=4.12",
+    "openpyxl>=3.1",
+    "resend>=2.0",
+]
