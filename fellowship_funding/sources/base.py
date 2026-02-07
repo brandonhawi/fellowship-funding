@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 
 
@@ -16,6 +16,7 @@ class Opportunity:
     amount: str
     eligibility: str
     organization: str
+    notes: str = ""
 
 
 class Source(ABC):

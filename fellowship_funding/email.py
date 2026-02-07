@@ -110,6 +110,12 @@ def _build_html(opportunities: list[tuple[Opportunity, int]]) -> str:
 
             parts.append("</div>")
 
+            if opp.notes:
+                parts.append(
+                    f"<div style='font-size:12px;color:#b7791f;background:#fffff0;padding:4px 8px;"
+                    f"border-radius:4px;margin-top:6px;border:1px solid #f6e05e;'>{opp.notes}</div>"
+                )
+
             if desc_excerpt:
                 parts.append(
                     f"<div style='font-size:13px;color:#666;margin-top:6px;'>{desc_excerpt}</div>"
