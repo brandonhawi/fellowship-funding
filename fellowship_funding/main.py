@@ -61,7 +61,9 @@ def main() -> None:
 def _init_source(source_cls: type, config):
     name = source_cls.__name__
     if name == "UCLASource":
-        return source_cls(disciplines=config.disciplines)
+        return source_cls(disciplines=config.disciplines, academic_level=config.academic_level)
+    elif name == "UCISource":
+        return source_cls(academic_level=config.academic_level)
     elif name == "ZintellectSource":
         return source_cls(
             keywords=config.keywords,

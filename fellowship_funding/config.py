@@ -17,7 +17,7 @@ DEFAULT_DISCIPLINES = [
 class Config:
     keywords: list[str] = field(default_factory=lambda: list(DEFAULT_KEYWORDS))
     disciplines: list[str] = field(default_factory=lambda: list(DEFAULT_DISCIPLINES))
-    academic_level: str = "phd_student"
+    academic_level: str = "dissertation"
     citizenship: str = "us_citizen"
     gmail_client_id: str = ""
     gmail_client_secret: str = ""

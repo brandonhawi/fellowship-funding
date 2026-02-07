@@ -14,8 +14,17 @@ WP_API_URL = "https://grad.uci.edu/wp-json/wp/v2/fellowships"
 ANNOUNCEMENTS_URL = "https://grad.uci.edu/funding/fellowship-announcements/"
 
 
+UCI_LEVEL_MAP = {
+    "dissertation": {"current", "advanced"},
+    "phd_student": {"current", "prospective", "advanced"},
+}
+
+
 class UCISource(Source):
     name = "UCI Graduate Fellowships"
+
+    def __init__(self, academic_level: str = "phd_student"):
+        self.accepted_levels = UCI_LEVEL_MAP.get(academic_level, {"current", "advanced"})
 
     def fetch(self) -> list[Opportunity]:
         try:
@@ -39,6 +48,9 @@ class UCISource(Source):
         for item in data:
             acf = item.get("acf", {})
             if acf.get("application_status") != "open":
+                continue
+            level = acf.get("academic_level", "")
+            if level and level not in self.accepted_levels:
                 continue
 
             deadline = self._parse_deadline(acf.get("deadline", ""))

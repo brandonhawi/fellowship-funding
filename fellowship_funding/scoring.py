@@ -27,6 +27,16 @@ def score_opportunity(opp: Opportunity, config: Config) -> int:
         if disc_lower in combined:
             score += 3
 
+    # Bonus for dissertation-stage keywords when academic level is dissertation
+    if config.academic_level == "dissertation":
+        dissertation_terms = [
+            "dissertation", "abd", "candidacy", "completion",
+            "doctoral candidate", "write-up", "thesis",
+        ]
+        for term in dissertation_terms:
+            if term in combined:
+                score += 10
+
     return min(int(score), 100)
 
 

@@ -21,8 +21,9 @@ DISCIPLINE_FIELDS = {
 class UCLASource(Source):
     name = "UCLA Graduate Funding"
 
-    def __init__(self, disciplines: list[str] | None = None):
+    def __init__(self, disciplines: list[str] | None = None, academic_level: str = "phd_student"):
         self.disciplines = disciplines or []
+        self.academic_level = academic_level
 
     def fetch(self) -> list[Opportunity]:
         try:
@@ -39,6 +40,8 @@ class UCLASource(Source):
                 fq_parts.append(f"{field}:true")
 
         fq_parts.append("currentgrad:true")
+        if self.academic_level == "dissertation":
+            fq_parts.append("doctoraldiss:true")
         fq = " OR ".join(fq_parts)
 
         resp = requests.get(
