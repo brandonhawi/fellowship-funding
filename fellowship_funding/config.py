@@ -19,9 +19,9 @@ class Config:
     disciplines: list[str] = field(default_factory=lambda: list(DEFAULT_DISCIPLINES))
     academic_level: str = "phd_student"
     citizenship: str = "us_citizen"
-    resend_api_key: str = ""
-    recipient_email: str = ""
+    gmail_app_password: str = ""
     sender_email: str = ""
+    recipient_email: str = ""
     score_threshold: int = 10
 
 
@@ -41,8 +41,8 @@ def load_config() -> Config:
     if "score_threshold" in profile:
         kwargs["score_threshold"] = int(profile["score_threshold"])
 
-    kwargs["resend_api_key"] = os.environ.get("RESEND_API_KEY", "")
-    kwargs["recipient_email"] = os.environ.get("RECIPIENT_EMAIL", "")
+    kwargs["gmail_app_password"] = os.environ.get("GMAIL_APP_PASSWORD", "")
     kwargs["sender_email"] = os.environ.get("SENDER_EMAIL", "")
+    kwargs["recipient_email"] = os.environ.get("RECIPIENT_EMAIL", "")
 
     return Config(**kwargs)

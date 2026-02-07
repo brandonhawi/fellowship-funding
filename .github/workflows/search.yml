@@ -17,9 +17,9 @@ jobs:
       - run: uv run python -m fellowship_funding
         env:
           PROFILE_JSON: ${{ vars.PROFILE_JSON }}
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: update seen opportunities"

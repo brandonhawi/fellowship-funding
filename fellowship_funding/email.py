@@ -1,29 +1,31 @@
 from __future__ import annotations
 
 import logging
+import smtplib
 from datetime import date
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from itertools import groupby
-
-import resend
 
 from .config import Config
 from .sources.base import Opportunity
 
 logger = logging.getLogger(__name__)
 
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
+
 
 def send_digest(
     opportunities: list[tuple[Opportunity, int]],
     config: Config,
 ) -> None:
-    if not config.resend_api_key:
-        logger.warning("No RESEND_API_KEY set, skipping email")
+    if not config.gmail_app_password:
+        logger.warning("No GMAIL_APP_PASSWORD set, skipping email")
         return
-    if not config.recipient_email or not config.sender_email:
+    if not config.sender_email or not config.recipient_email:
         logger.warning("Missing email addresses, skipping email")
         return
-
-    resend.api_key = config.resend_api_key
 
     subject = (
         f"Fellowship Digest: {len(opportunities)} new opportunities "
@@ -32,13 +34,17 @@ def send_digest(
 
     html = _build_html(opportunities)
 
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"] = config.sender_email
+    msg["To"] = config.recipient_email
+    msg.attach(MIMEText(html, "html"))
+
     try:
-        resend.Emails.send({
-            "from": config.sender_email,
-            "to": [config.recipient_email],
-            "subject": subject,
-            "html": html,
-        })
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            server.starttls()
+            server.login(config.sender_email, config.gmail_app_password)
+            server.sendmail(config.sender_email, config.recipient_email, msg.as_string())
         logger.info("Email sent to %s with %d opportunities", config.recipient_email, len(opportunities))
     except Exception:
         logger.exception("Failed to send email")
