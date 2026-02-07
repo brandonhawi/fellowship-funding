@@ -32,14 +32,16 @@ def send_digest(
 
     html = _build_html(opportunities)
 
-    resend.Emails.send({
-        "from": config.sender_email,
-        "to": [config.recipient_email],
-        "subject": subject,
-        "html": html,
-    })
-
-    logger.info("Email sent to %s with %d opportunities", config.recipient_email, len(opportunities))
+    try:
+        resend.Emails.send({
+            "from": config.sender_email,
+            "to": [config.recipient_email],
+            "subject": subject,
+            "html": html,
+        })
+        logger.info("Email sent to %s with %d opportunities", config.recipient_email, len(opportunities))
+    except Exception:
+        logger.exception("Failed to send email")
 
 
 def _build_html(opportunities: list[tuple[Opportunity, int]]) -> str:
