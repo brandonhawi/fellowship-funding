@@ -87,7 +87,7 @@ class UCLASource(Source):
             results.append(Opportunity(
                 id=f"ucla:{record_no}",
                 title=doc.get("awardtitle", ""),
-                url=f"https://grad.ucla.edu/funding/#/detail/{record_no}",
+                url=f"https://grad.ucla.edu/funding/#/view-record/{record_no}/0",
                 source=self.name,
                 description=doc.get("description", ""),
                 deadline=deadline,
