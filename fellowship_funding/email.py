@@ -1,27 +1,40 @@
 from __future__ import annotations
 
+import base64
 import logging
-import smtplib
 from datetime import date
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from itertools import groupby
+
+import requests
 
 from .config import Config
 from .sources.base import Opportunity
 
 logger = logging.getLogger(__name__)
 
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 587
+TOKEN_URL = "https://oauth2.googleapis.com/token"
+SEND_URL = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send"
+
+
+def _get_access_token(config: Config) -> str:
+    resp = requests.post(TOKEN_URL, data={
+        "client_id": config.gmail_client_id,
+        "client_secret": config.gmail_client_secret,
+        "refresh_token": config.gmail_refresh_token,
+        "grant_type": "refresh_token",
+    })
+    resp.raise_for_status()
+    return resp.json()["access_token"]
 
 
 def send_digest(
     opportunities: list[tuple[Opportunity, int]],
     config: Config,
 ) -> None:
-    if not config.gmail_app_password:
-        logger.warning("No GMAIL_APP_PASSWORD set, skipping email")
+    if not config.gmail_refresh_token:
+        logger.warning("No GMAIL_REFRESH_TOKEN set, skipping email")
         return
     if not config.sender_email or not config.recipient_email:
         logger.warning("Missing email addresses, skipping email")
@@ -40,11 +53,16 @@ def send_digest(
     msg["To"] = config.recipient_email
     msg.attach(MIMEText(html, "html"))
 
+    raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()
+
     try:
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-            server.starttls()
-            server.login(config.sender_email, config.gmail_app_password)
-            server.sendmail(config.sender_email, config.recipient_email, msg.as_string())
+        access_token = _get_access_token(config)
+        resp = requests.post(
+            SEND_URL,
+            headers={"Authorization": f"Bearer {access_token}"},
+            json={"raw": raw},
+        )
+        resp.raise_for_status()
         logger.info("Email sent to %s with %d opportunities", config.recipient_email, len(opportunities))
     except Exception:
         logger.exception("Failed to send email")
