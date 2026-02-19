@@ -49,9 +49,13 @@ def main() -> None:
         return
 
     # Send email
-    send_digest(new_opps, config)
+    try:
+        send_digest(new_opps, config)
+    except Exception:
+        logger.exception("Failed to send digest email")
+        sys.exit(1)
 
-    # Update seen tracker
+    # Update seen tracker only after successful send
     updated_seen = mark_seen(new_opps, seen)
     save_seen(updated_seen)
 

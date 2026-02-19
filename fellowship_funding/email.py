@@ -55,17 +55,14 @@ def send_digest(
 
     raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()
 
-    try:
-        access_token = _get_access_token(config)
-        resp = requests.post(
-            SEND_URL,
-            headers={"Authorization": f"Bearer {access_token}"},
-            json={"raw": raw},
-        )
-        resp.raise_for_status()
-        logger.info("Email sent to %s with %d opportunities", config.recipient_email, len(opportunities))
-    except Exception:
-        logger.exception("Failed to send email")
+    access_token = _get_access_token(config)
+    resp = requests.post(
+        SEND_URL,
+        headers={"Authorization": f"Bearer {access_token}"},
+        json={"raw": raw},
+    )
+    resp.raise_for_status()
+    logger.info("Email sent to %s with %d opportunities", config.recipient_email, len(opportunities))
 
 
 def _build_html(opportunities: list[tuple[Opportunity, int]]) -> str:
