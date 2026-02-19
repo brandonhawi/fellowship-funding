@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 .env
 data/jhu_early_career.xlsx
+.playwright-mcp/
